@@ -13,7 +13,7 @@ apps:
   krellian-kiosk:
     daemon: simple
     restart-condition: always
-    command: desktop-launch xwayland-kiosk-launch $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox -p 80
+    command: desktop-launch xwayland-kiosk-launch $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox -p systemd
     plugs:
     - audio-playback
     - browser-support
@@ -23,6 +23,9 @@ apps:
     - opengl
     - pulseaudio
     - wayland
+    sockets:
+      http:
+        listen-stream: 80
 
 environment:
   XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
@@ -32,7 +35,7 @@ parts:
     plugin: nodejs
     nodejs-package-manager: npm
     nodejs-version: 12.18.2
-    source: https://github.com/krellian/kiosk.git
+    source: .
     after: [desktop-gtk3, xwayland-kiosk-helper]
     override-build: |
         # Only try to build for architectures supported by Electron
@@ -75,6 +78,7 @@ parts:
     - libx11-xcb1
     - libxss1
     - libxtst6
+    - util-linux
     build-packages:
     - unzip
 
@@ -111,3 +115,12 @@ parts:
     source: https://github.com/MirServer/xwayland-kiosk-helper.git
     build-packages: [ build-essential ]
     stage-packages: [ xwayland, i3, libegl1-mesa, libgl1-mesa-glx ]
+
+  # Copy runtime helpers (including bin/drop-snap-daemon.sh) into snap
+  krellian-kiosk-runtime-helpers:
+    plugin: dump
+    source: snap/local/runtime-helpers
+
+# snap_daemon user used to run daemon instead of root
+system-usernames:
+  snap_daemon: shared
