@@ -14,7 +14,7 @@ var Services = {
   /**
    * Start system services.
    *
-   * @param {(number|boolean)} port HTTP port.
+   * @param {(number|string)} port HTTP port.
    */
   start: function(port) {
     // Start database and credential manager

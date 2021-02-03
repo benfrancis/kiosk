@@ -78,7 +78,7 @@ parts:
     - libx11-xcb1
     - libxss1
     - libxtst6
-    - util-linux
+    - setpriv
     build-packages:
     - unzip
 
