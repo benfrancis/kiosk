@@ -79,6 +79,7 @@ parts:
     - libxss1
     - libxtst6
     - setpriv
+    - x11-xserver-utils
     build-packages:
     - unzip
 

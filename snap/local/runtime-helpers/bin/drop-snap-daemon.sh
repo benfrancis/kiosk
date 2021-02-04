@@ -5,11 +5,14 @@ chown  snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home
 chown  snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home/.config
 
 # set XDG_CONFIG_HOME to use our $SNAP_USER_DATA (needed by Electron)
-XDG_CONFIG_HOME=$SNAP_DATA/snap-daemon-home/.config 
+XDG_CONFIG_HOME=$SNAP_DATA/snap-daemon-home/.config
 export XDG_CONFIG_HOME
 
 # maybe this is unnecessary, but just to be safe if electron needs $HOME for anything else
 HOME=$SNAP_DATA/snap-daemon-home
 export HOME
+
+# Give the snap_daemon user access to the X server
+xhost si:localuser:snap_daemon
 
 exec "$SNAP/usr/bin/setpriv" --clear-groups --reuid snap_daemon --regid snap_daemon -- "$@"
