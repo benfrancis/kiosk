@@ -1,18 +1,27 @@
 #!/bin/bash -ex
-# setup a $SNAP_USER_DATA under $SNAP_DATA for snap-daemon user
+
+# Create data directories needed by Electron
+mkdir -p $SNAP_DATA/snap-daemon-home
 mkdir -p $SNAP_DATA/snap-daemon-home/.config
-chown  snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home
-chown  snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home/.config
+if [[ ! -d $SNAP_DATA/snap-daemon-home/.cache ]]
+then
+  # Copy .cache directory to somewhere snap_daemon can access
+  cp -r $SNAP_USER_COMMON/.cache $SNAP_DATA/snap-daemon-home/
+fi
 
-# set XDG_CONFIG_HOME to use our $SNAP_USER_DATA (needed by Electron)
-XDG_CONFIG_HOME=$SNAP_DATA/snap-daemon-home/.config
-export XDG_CONFIG_HOME
+# Give snap_daemon ownership over data directories
+chown snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home
+chown snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home/.config
+chown -R snap_daemon:snap_daemon $SNAP_DATA/snap-daemon-home/.cache
 
-# maybe this is unnecessary, but just to be safe if electron needs $HOME for anything else
-HOME=$SNAP_DATA/snap-daemon-home
-export HOME
+# Tell Electron where to find data directories
+export HOME=$SNAP_DATA/snap-daemon-home
+export XDG_CONFIG_HOME=$SNAP_DATA/snap-daemon-home/.config
+export XDG_CACHE_HOME=$SNAP_DATA/snap-daemon-home/.cache
+export GDK_PIXBUF_MODULE_FILE=$XDG_CACHE_HOME/gdk-pixbuf-loaders.cache
 
 # Give the snap_daemon user access to the X server
 xhost si:localuser:snap_daemon
 
+# Execute the rest of the command chain as the snap_daemon user
 exec "$SNAP/usr/bin/setpriv" --clear-groups --reuid snap_daemon --regid snap_daemon -- "$@"
