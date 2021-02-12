@@ -23,7 +23,7 @@ const Kiosk = {
     let httpPort = args.p || DEFAULT_PORT;
 
     // If port configured by systemd, assume port 80
-    if httpPort == 'systemd' {
+    if (httpPort == 'systemd') {
       httpPort = '80';
     }
 
