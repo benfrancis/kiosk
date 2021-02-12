@@ -13,7 +13,7 @@ apps:
   krellian-kiosk:
     daemon: simple
     restart-condition: always
-    command: desktop-launch xwayland-kiosk-launch $SNAP/bin/drop-snap-daemon.sh $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox -p systemd
+    command: desktop-launch xwayland-kiosk-launch $SNAP/bin/drop-snap-daemon.sh $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox --enable-logging -p systemd
     plugs:
     - audio-playback
     - browser-support
