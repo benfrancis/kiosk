@@ -13,7 +13,9 @@ apps:
   krellian-kiosk:
     daemon: simple
     restart-condition: always
-    command: desktop-launch xwayland-kiosk-launch $SNAP/bin/drop-snap-daemon.sh $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox --enable-logging -p systemd
+    command: desktop-launch xwayland-kiosk-launch drop-snap-daemon.sh $SNAP/krellian-kiosk/krellian-kiosk --no-sandbox --enable-logging -p systemd
+    slots:
+    - x11
     plugs:
     - audio-playback
     - browser-support
@@ -23,9 +25,14 @@ apps:
     - opengl
     - pulseaudio
     - wayland
+    - x11-plug
     sockets:
       http:
         listen-stream: 80
+
+plugs:
+  x11-plug:
+    interface: x11
 
 environment:
   XWAYLAND_FULLSCREEN_WINDOW_HINT: window_role="browser-window"
@@ -110,6 +117,11 @@ parts:
       - xdg-user-dirs
       - ibus-gtk3
       - libibus-1.0-5
+    override-prime: |
+        snapcraftctl prime
+
+        # Rebuild mime database as it seems to be missed
+        update-mime-database $SNAPCRAFT_PRIME/usr/share/mime
 
   xwayland-kiosk-helper:
     plugin: cmake
